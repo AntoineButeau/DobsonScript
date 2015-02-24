@@ -33,9 +33,6 @@ def writeEntriesToExcel(df):
         dfSME.to_excel(writer, 'SME', index=False, startrow=5, startcol=3)
 
 def xlDobson():
-    """
-    This is a wrapper around fibonacci() to handle all the Excel stuff
-    """
     df = pd.read_csv('2015_McGill_Dobson_Cup.csv')
 
     df = cleanData(df)
@@ -46,9 +43,4 @@ def xlDobson():
 
 
 if __name__ == "__main__":
-#    if not hasattr(sys, 'frozen'):
-#        # The next two lines are here to run the example from Python
-#        # Ignore them when called in the frozen/standalone version
-#        path = os.path.abspath(os.path.join(os.path.dirname(__file__), '2015_McGill_Dobson_Cup.csv'))
-#        Workbook.set_mock_caller(path)
     xlDobson()
