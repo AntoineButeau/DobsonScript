@@ -5,19 +5,35 @@ import sys
 from xlwings import Workbook, Range, Sheet
 import pandas as pd
 from pandas import ExcelWriter
-
+import numpy as np
 
 
 def cleanData(df):
 
     df = df[pd.notnull(df['V14'])]   # Removing empty entries from V14- Registration form
-    df = df.ix[0:, 'V16':'V189']     #Slicing useful columns and rows
+    df = df.ix[:, 'V16':'V189']     #Slicing useful columns and rows
 
     return df
 
+def concat(*args):
+    strs = [str(arg) for arg in args if not pd.isnull(arg)]
+    return ','.join(strs) if strs else np.nan
+
 def entriesFormatting(df):
-    valuesToSlice = ['V16', 'V19', 'V20', 'V21', 'V22', 'V102', 'V105', 'V103', 'V109', 'V112', 'V113', 'V114', 'V115', 'V116', 'V117', 'V119', 'V120', 'V123', 'V121', 'V127', 'V130', 'V131', 'V132', 'V133', 'V134', 'V135', 'V137', 'V138', 'V141', 'V139', 'V145', 'V148', 'V149', 'V150', 'V151', 'V152', 'V153', 'V155', 'V156', 'V158', 'V157', 'V162', 'V165', 'V166', 'V167', 'V168', 'V169', 'V170', 'V172', 'V173', 'V175', 'V174', 'V179', 'V182', 'V183', 'V184', 'V185', 'V186', 'V187', 'V189']
-    df = df[valuesToSlice]
+    np_concat = np.vectorize(concat)
+
+    dfStartupBasicInfo = df.ix[:,'V16':'V22']
+    dfMember1 = df.ix[:,'V102':'V119']
+    dfMember2 = df.ix[:,'V120':'V137']
+    dfMember3 = df.ix[:, 'V138':'V155']
+    dfMember4 = df.ix[:, 'V156':'V172']
+    dfMember5 = df.ix[:,'V173':'V189']
+    dfStartupMoreInfo = df.ix[:,'V46':'V101']
+    dfHowWeMet = df.ix[:,'V23':'V45']
+
+    dfHowWeMet['V23'] = np_concat(dfHowWeMet['V23'], dfHowWeMet['V24'], dfHowWeMet['V25'], dfHowWeMet['V26'], dfHowWeMet['V27'], dfHowWeMet['V28'], dfHowWeMet['V29'], dfHowWeMet['V30'], dfHowWeMet['V31'], dfHowWeMet['V32'], dfHowWeMet['V33'], dfHowWeMet['V34'], dfHowWeMet['V35'], dfHowWeMet['V36'], dfHowWeMet['V37'], dfHowWeMet['V38'], dfHowWeMet['V39'], dfHowWeMet['V40'], dfHowWeMet['V41'], dfHowWeMet['V42'], dfHowWeMet['V43'], dfHowWeMet['V44'], dfHowWeMet['V45'])
+
+    df = dfStartupBasicInfo.join(dfHowWeMet['V23']).join(dfMember1).join(dfMember2).join(dfStartupMoreInfo)
 
     return df
 
